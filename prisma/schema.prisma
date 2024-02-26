@@ -28,6 +28,7 @@ model Trip {
 
 model Driver {
   id Int @default(autoincrement()) @id
+  name String 
   status String @default("active")
   trips Trip[]
 
@@ -36,6 +37,7 @@ model Driver {
 
 model Passenger {
   id Int @default(autoincrement()) @id
+  name String 
   trips Trip[]
 
   @@map("passengers")

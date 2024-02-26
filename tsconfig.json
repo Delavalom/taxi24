@@ -19,6 +19,9 @@
     "noFallthroughCasesInSwitch": true,
     "alwaysStrict": true,
     "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "paths": {
+      "src": ["/src"]
+    }
   }
 }

@@ -1,4 +1,8 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateTripDto } from './create-trip.dto';
+import { IsEnum, IsOptional } from 'class-validator';
+import { TripStatus } from 'src/common/enums/trips.status.enum';
 
-export class UpdateTripDto extends PartialType(CreateTripDto) {}
+export class UpdateTripDto {
+  @IsEnum(TripStatus)
+  @IsOptional()
+  status?: TripStatus;
+}
