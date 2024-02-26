@@ -3,9 +3,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { Random } from '../src/common/utils/random';
 
-describe('PassengerController E2E Test', () => {
+describe('BillController E2E Test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -18,40 +17,40 @@ describe('PassengerController E2E Test', () => {
     await app.init();
   });
 
-  describe('POST Create Passenger', () => {
+  describe('POST Create Bill', () => {
     it('Create Successfully', async () => {
       return request(app.getHttpServer())
-        .post('/passengers')
+        .post('/bills')
         .send({
-          name: faker.person.fullName(),
+          amount: faker.number.int({ min: 0, max: 1000 }),
         })
         .expect(201);
     });
 
     it('Min Length required for Name', async () => {
       return request(app.getHttpServer())
-        .post('/passengers')
+        .post('/bills')
         .send({
-          name: new Random().randomString(2),
+          amount: -1,
         })
         .expect(400);
     });
   });
 
-  describe('GET All Passengers', () => {
-    it('Query Successfully', async () => {
-      return request(app.getHttpServer()).get('/passengers').expect(200);
+  describe('GET All Bills', () => {
+    it('Successful Case', async () => {
+      return request(app.getHttpServer()).get('/bills').expect(200);
     });
   });
 
   describe('GET Passenger by ID', () => {
     it('Successful Case', async () => {
-      return request(app.getHttpServer()).get(`/passengers/${1}`).expect(200);
+      return request(app.getHttpServer()).get(`/bills/${1}`).expect(200);
     });
 
     it('Invalid ID', async () => {
       return request(app.getHttpServer())
-        .get(`/passengers/'invalid_id'`)
+        .get(`/bills/'invalid_id'`)
         .expect(400);
     });
   });

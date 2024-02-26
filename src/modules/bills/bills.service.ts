@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../services/prisma.service';
 import { CreateBillDto } from './dto/create-bill.dto';
-import { UpdateBillDto } from './dto/update-bill.dto';
-import { PrismaService } from 'src/services/prisma.service';
+import { GetAllBillsDto } from './dto/get-all-bills.dto';
 
 @Injectable()
 export class BillsService {
@@ -11,22 +11,16 @@ export class BillsService {
     return this.prismaService.bill.create({ data: createBillDto });
   }
 
-  findAll() {
-    return this.prismaService.bill.findMany();
+  async findAll({ limit = 10, page = 1 }: GetAllBillsDto) {
+    const data = await this.prismaService.bill.findMany({
+      take: limit,
+      skip: (page - 1) * 10,
+    });
+
+    return { data };
   }
 
   findOne(id: number) {
     return this.prismaService.bill.findFirst({ where: { id } });
-  }
-
-  update(id: number, updateBillDto: UpdateBillDto) {
-    return this.prismaService.bill.update({
-      where: { id },
-      data: updateBillDto,
-    });
-  }
-
-  remove(id: number) {
-    return this.prismaService.bill.delete({ where: { id } });
   }
 }

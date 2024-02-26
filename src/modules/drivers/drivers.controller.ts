@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { DriversService } from './drivers.service';
 import { CreateDriverDto } from './dto/create-driver.dto';
 import { UpdateDriverDto } from './dto/update-driver.dto';
+import { GetAllDriversDto } from './dto/get-all-drivers.dto';
 
 @Controller('drivers')
 export class DriversController {
@@ -13,22 +24,25 @@ export class DriversController {
   }
 
   @Get()
-  findAll() {
-    return this.driversService.findAll();
+  findAll(@Query() getAllDriversDto: GetAllDriversDto) {
+    return this.driversService.findAll(getAllDriversDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.driversService.findOne(+id);
+  findOne(@Param('id', new ParseIntPipe()) id: number) {
+    return this.driversService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDriverDto: UpdateDriverDto) {
-    return this.driversService.update(+id, updateDriverDto);
+  update(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() updateDriverDto: UpdateDriverDto,
+  ) {
+    return this.driversService.update(id, updateDriverDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.driversService.remove(+id);
+  remove(@Param('id', new ParseIntPipe()) id: number) {
+    return this.driversService.remove(id);
   }
 }

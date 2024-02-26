@@ -1,15 +1,18 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Patch,
+  Post,
+  Query,
 } from '@nestjs/common';
-import { PassengersService } from './passengers.service';
 import { CreatePassengerDto } from './dto/create-passenger.dto';
+import { GetAllPassengersDto } from './dto/get-all-passengers.dto';
 import { UpdatePassengerDto } from './dto/update-passenger.dto';
+import { PassengersService } from './passengers.service';
 
 @Controller('passengers')
 export class PassengersController {
@@ -21,25 +24,25 @@ export class PassengersController {
   }
 
   @Get()
-  findAll() {
-    return this.passengersService.findAll();
+  findAll(@Query() getAllPassengersDto: GetAllPassengersDto) {
+    return this.passengersService.findAll(getAllPassengersDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.passengersService.findOne(+id);
+  findOne(@Param('id', new ParseIntPipe()) id: number) {
+    return this.passengersService.findOne(id);
   }
 
   @Patch(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', new ParseIntPipe()) id: number,
     @Body() updatePassengerDto: UpdatePassengerDto,
   ) {
-    return this.passengersService.update(+id, updatePassengerDto);
+    return this.passengersService.update(id, updatePassengerDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.passengersService.remove(+id);
+  remove(@Param('id', new ParseIntPipe()) id: number) {
+    return this.passengersService.remove(id);
   }
 }

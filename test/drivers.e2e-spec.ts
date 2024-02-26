@@ -1,11 +1,11 @@
-import { faker } from '@faker-js/faker';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
+import * as request from 'supertest';
 import { Random } from '../src/common/utils/random';
+import { faker } from '@faker-js/faker';
 
-describe('PassengerController E2E Test', () => {
+describe('DriverController E2E Test', () => {
   let app: INestApplication;
 
   beforeAll(async () => {
@@ -18,19 +18,19 @@ describe('PassengerController E2E Test', () => {
     await app.init();
   });
 
-  describe('POST Create Passenger', () => {
-    it('Create Successfully', async () => {
+  describe('POST Create Driver', () => {
+    it('Successful Case', async () => {
       return request(app.getHttpServer())
-        .post('/passengers')
+        .post('/drivers')
         .send({
           name: faker.person.fullName(),
         })
         .expect(201);
     });
 
-    it('Min Length required for Name', async () => {
+    it('Invalid Length', async () => {
       return request(app.getHttpServer())
-        .post('/passengers')
+        .post('/drivers')
         .send({
           name: new Random().randomString(2),
         })
@@ -38,20 +38,20 @@ describe('PassengerController E2E Test', () => {
     });
   });
 
-  describe('GET All Passengers', () => {
-    it('Query Successfully', async () => {
-      return request(app.getHttpServer()).get('/passengers').expect(200);
+  describe('GET All Drivers', () => {
+    it('Successful Case', async () => {
+      return request(app.getHttpServer()).get('/drivers').expect(200);
     });
   });
 
-  describe('GET Passenger by ID', () => {
+  describe('GET Driver by ID', () => {
     it('Successful Case', async () => {
-      return request(app.getHttpServer()).get(`/passengers/${1}`).expect(200);
+      return request(app.getHttpServer()).get(`/drivers/${1}`).expect(200);
     });
 
     it('Invalid ID', async () => {
       return request(app.getHttpServer())
-        .get(`/passengers/'invalid_id'`)
+        .get(`/drivers/'invalid_id'`)
         .expect(400);
     });
   });

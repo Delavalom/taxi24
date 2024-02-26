@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../services/prisma.service';
 import { CreateDriverDto } from './dto/create-driver.dto';
+import { GetAllDriversDto } from './dto/get-all-drivers.dto';
 import { UpdateDriverDto } from './dto/update-driver.dto';
-import { PrismaService } from 'src/services/prisma.service';
 
 @Injectable()
 export class DriversService {
@@ -10,8 +11,16 @@ export class DriversService {
     return this.prismaService.driver.create({ data: createDriverDto });
   }
 
-  findAll() {
-    return this.prismaService.driver.findMany();
+  async findAll({ limit = 10, page = 1, status }: GetAllDriversDto) {
+    const data = await this.prismaService.driver.findMany({
+      take: limit,
+      skip: (page - 1) * 10,
+      where: {
+        status,
+      },
+    });
+
+    return { data };
   }
 
   findOne(id: number) {
