@@ -11,6 +11,9 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
     strategy:
         matrix:
           node-version: [18.x]
@@ -46,5 +49,3 @@ jobs:
       
     - name: Run E2E Tests
       run: npm run test:e2e
-      env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
