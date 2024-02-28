@@ -50,15 +50,17 @@ export class DriversService {
   async findNearbyDrivers(location: string, limit: number) {
     const [longitud, latitude] = getLonLat(location);
 
-    return this.prismaService.$queryRaw<Driver[]>`SELECT name,
-      ST_AsText(location, 4),
-      Round(ST_DistanceSphere(location, ST_SetSRID(ST_MakePoint(${longitud}::double precision, ${latitude})::double precision, 4326))) AS distance
+    return this.prismaService.$queryRaw<Driver[]>`SELECT 
+      id,
+      name,
+      ST_AsText(location, 4) as coordinates,
+      Round(ST_DistanceSphere(location, ST_SetSRID(ST_MakePoint(${longitud}, ${latitude}), 4326))) AS distance_in_meters
       FROM
           drivers
       WHERE
         status = 'active'
       ORDER BY
-          distance
+        distance_in_meters
       LIMIT
           ${limit};
     `;

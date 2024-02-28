@@ -1,13 +1,15 @@
 import {
   Body,
   Controller,
-  Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { CreateTripDto } from './dto/create-trip.dto';
+import { GetAllTripsDto } from './dto/get-all-trips.dto';
 import { UpdateTripDto } from './dto/update-trip.dto';
 import { TripsService } from './trips.service';
 
@@ -21,22 +23,20 @@ export class TripsController {
   }
 
   @Get()
-  findAll() {
-    return this.tripsService.findAll();
+  findAll(@Query() getAllTripsDto: GetAllTripsDto) {
+    return this.tripsService.findAll(getAllTripsDto);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.tripsService.findOne(+id);
+  findOne(@Param('id', new ParseIntPipe()) id: number) {
+    return this.tripsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTripDto: UpdateTripDto) {
-    return this.tripsService.update(+id, updateTripDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.tripsService.remove(+id);
+  update(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() updateTripDto: UpdateTripDto,
+  ) {
+    return this.tripsService.update(id, updateTripDto);
   }
 }

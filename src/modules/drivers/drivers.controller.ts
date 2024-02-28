@@ -37,9 +37,9 @@ export class DriversController {
     return this.driversService.findAll(getAllDriversDto);
   }
 
-  @Post()
+  @Post('/nearby/drivers')
   getNearbyDrivers(@Body() body: { location: string }) {
-    return this.driversService.findNearbyDrivers(body.location, 3);
+    return this.driversService.findNearbyDrivers(body.location, 10);
   }
 
   @Get(':id')
