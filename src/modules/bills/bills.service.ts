@@ -7,8 +7,8 @@ import { GetAllBillsDto } from './dto/get-all-bills.dto';
 export class BillsService {
   constructor(private prismaService: PrismaService) {}
 
-  create(createBillDto: CreateBillDto) {
-    return this.prismaService.bill.create({ data: createBillDto });
+  create(tripId: number, { amount }: CreateBillDto) {
+    return this.prismaService.bill.create({ data: { amount, tripId } });
   }
 
   async findAll({ limit = 10, page = 1 }: GetAllBillsDto) {

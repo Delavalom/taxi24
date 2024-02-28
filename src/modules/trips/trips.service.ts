@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { TripStatus } from '../../common/enums/trips.status.enum';
 import { getLonLat } from '../../common/utils/geLonLat';
 import { PrismaService } from '../../services/prisma.service';
+import { BillsService } from '../bills/bills.service';
 import { DriversService } from '../drivers/drivers.service';
 import { CreateTripDto } from './dto/create-trip.dto';
 import { GetAllTripsDto } from './dto/get-all-trips.dto';
@@ -11,6 +13,7 @@ export class TripsService {
   constructor(
     private prismaService: PrismaService,
     private driversService: DriversService,
+    private billsService: BillsService,
   ) {}
   async create({ passengerId, startingPoint, endingPoint }: CreateTripDto) {
     const drivers = await this.driversService.findNearbyDrivers(
@@ -51,10 +54,32 @@ export class TripsService {
     return this.prismaService.trip.findFirst({ where: { id } });
   }
 
-  update(id: number, updateTripDto: UpdateTripDto) {
-    return this.prismaService.trip.update({
-      where: { id },
-      data: updateTripDto,
-    });
+  async update(id: number, updateTripDto: UpdateTripDto) {
+    return this.prismaService.$transaction(
+      async (tx) => {
+        // eslint-disable-next-line prettier/prettier
+        const trips = await tx.$queryRaw<{ distance: number }[]>`SELECT 
+      Round(ST_DistanceSphere(starting_point, ending_point)) AS distance
+      FROM
+          trips
+      WHERE
+        id = ${id}
+      LIMIT
+          1;
+    `;
+
+        if (updateTripDto.status === TripStatus.COMPLETED && trips[0]) {
+          await this.billsService.create(id, {
+            amount: trips[0].distance * 1.445,
+          });
+        }
+
+        tx.trip.update({
+          where: { id },
+          data: updateTripDto,
+        });
+      },
+      { isolationLevel: 'Serializable' },
+    );
   }
 }

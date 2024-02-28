@@ -5,25 +5,26 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
   extensions = [postgis(version: "3.4.2")]
 }
 
 model Trip {
-  id Int @default(autoincrement()) @id
-  passenger Passenger @relation(fields: [passengerId], references: [id])
-  passengerId Int @map("passenger_id")
-  driver Driver @relation(fields: [driverId], references: [id])
-  driverId Int @map("driver_id")
-  status String @default("ongoing")
+  id            Int                                  @id @default(autoincrement())
+  passenger     Passenger                            @relation(fields: [passengerId], references: [id])
+  passengerId   Int                                  @map("passenger_id")
+  driver        Driver                               @relation(fields: [driverId], references: [id])
+  driverId      Int                                  @map("driver_id")
+  status        String                               @default("ongoing")
   startingPoint Unsupported("geometry(Point, 4326)") @map("starting_point")
-  endingPoint Unsupported("geometry(Point, 4326)") @map("ending_point")
+  endingPoint   Unsupported("geometry(Point, 4326)") @map("ending_point")
+  Bill          Bill[]
 
   @@index([startingPoint], name: "starting_point", type: Gist)
   @@index([endingPoint], name: "ending_point", type: Gist)
@@ -31,10 +32,10 @@ model Trip {
 }
 
 model Driver {
-  id Int @default(autoincrement()) @id
-  name String 
-  status String @default("active")
-  trips Trip[]
+  id       Int                                  @id @default(autoincrement())
+  name     String
+  status   String                               @default("active")
+  trips    Trip[]
   location Unsupported("geometry(Point, 4326)")
 
   @@index([location], name: "driver_location", type: Gist)
@@ -42,9 +43,9 @@ model Driver {
 }
 
 model Passenger {
-  id Int @default(autoincrement()) @id
-  name String 
-  trips Trip[]
+  id       Int                                  @id @default(autoincrement())
+  name     String
+  trips    Trip[]
   location Unsupported("geometry(Point, 4326)")
 
   @@index([location], name: "passenger_location", type: Gist)
@@ -52,9 +53,11 @@ model Passenger {
 }
 
 model Bill {
-  id Int @default(autoincrement()) @id
+  id     Int     @id @default(autoincrement())
   amount Float
-  paid Boolean @default(true)
+  paid   Boolean @default(true)
+  trip   Trip    @relation(fields: [tripId], references: [id])
+  tripId Int     @map("trip_id")
 
   @@map("bills")
 }
