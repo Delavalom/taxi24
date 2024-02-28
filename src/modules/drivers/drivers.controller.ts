@@ -25,7 +25,21 @@ export class DriversController {
 
   @Get()
   findAll(@Query() getAllDriversDto: GetAllDriversDto) {
+    if (
+      getAllDriversDto.ratio !== undefined &&
+      getAllDriversDto.location !== undefined
+    ) {
+      return this.driversService.findAllByRatio(
+        getAllDriversDto.location,
+        getAllDriversDto.ratio,
+      );
+    }
     return this.driversService.findAll(getAllDriversDto);
+  }
+
+  @Post()
+  getNearbyDrivers(@Body() body: { location: string }) {
+    return this.driversService.findNearbyDrivers(body.location, 3);
   }
 
   @Get(':id')

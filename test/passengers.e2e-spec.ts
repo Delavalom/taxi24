@@ -3,7 +3,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { Random } from '../src/common/utils/random';
+import { randomString } from '../src/common/utils/random';
 
 describe('PassengerController E2E Test', () => {
   let app: INestApplication;
@@ -20,19 +20,23 @@ describe('PassengerController E2E Test', () => {
 
   describe('POST Create Passenger', () => {
     it('Create Successfully', async () => {
-      return request(app.getHttpServer())
-        .post('/passengers')
-        .send({
-          name: faker.person.fullName(),
-        })
-        .expect(201);
+      for (let i = 0; i < 100; i++) {
+        return request(app.getHttpServer())
+          .post('/passengers')
+          .send({
+            name: faker.person.fullName(),
+            location: faker.location.nearbyGPSCoordinate().join(','),
+          })
+          .expect(201);
+      }
     });
 
     it('Min Length required for Name', async () => {
       return request(app.getHttpServer())
         .post('/passengers')
         .send({
-          name: new Random().randomString(2),
+          name: randomString(2),
+          location: faker.location.nearbyGPSCoordinate().join(','),
         })
         .expect(400);
     });

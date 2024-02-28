@@ -6,23 +6,27 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [postgis(version: "3.4.2")]
 }
 
 model Trip {
   id Int @default(autoincrement()) @id
   passenger Passenger @relation(fields: [passengerId], references: [id])
-  passengerId Int
+  passengerId Int @map("passenger_id")
   driver Driver @relation(fields: [driverId], references: [id])
-  driverId Int
+  driverId Int @map("driver_id")
   status String @default("ongoing")
-  startingPoint String @map("starting_point")
-  endingPoint String @map("ending_point")
+  startingPoint Unsupported("geometry(Point, 4326)") @map("starting_point")
+  endingPoint Unsupported("geometry(Point, 4326)") @map("ending_point")
 
+  @@index([startingPoint], name: "starting_point", type: Gist)
+  @@index([endingPoint], name: "ending_point", type: Gist)
   @@map("trips")
 }
 
@@ -31,7 +35,9 @@ model Driver {
   name String 
   status String @default("active")
   trips Trip[]
+  location Unsupported("geometry(Point, 4326)")
 
+  @@index([location], name: "driver_location", type: Gist)
   @@map("drivers")
 }
 
@@ -39,7 +45,9 @@ model Passenger {
   id Int @default(autoincrement()) @id
   name String 
   trips Trip[]
+  location Unsupported("geometry(Point, 4326)")
 
+  @@index([location], name: "passenger_location", type: Gist)
   @@map("passengers")
 }
 

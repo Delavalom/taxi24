@@ -6,5 +6,6 @@ import { PrismaService } from '../../services/prisma.service';
 @Module({
   controllers: [DriversController],
   providers: [DriversService, PrismaService],
+  exports: [DriversService],
 })
 export class DriversModule {}

@@ -1,15 +1,16 @@
-import { IsNumber, IsString } from 'class-validator';
+import { IsLatLong, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateTripDto {
   @IsNumber()
   passengerId: number;
 
-  @IsNumber()
-  driverId: number;
-
-  @IsString()
-  endingPoint: string;
-
+  @IsLatLong()
+  @IsNotEmpty()
   @IsString()
   startingPoint: string;
+
+  @IsLatLong()
+  @IsNotEmpty()
+  @IsString()
+  endingPoint: string;
 }
