@@ -41,9 +41,6 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-    - name: Create DB
-      run: npm run db:create
-
     - name: Run migrations
       run: npx prisma migrate dev
       
